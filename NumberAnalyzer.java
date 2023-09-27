@@ -1,15 +1,14 @@
 package numbers;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class NumberAnalyzer {
 
-    private BigInteger number;
+    private long number;
     private String numberString;
 
-    private void setNumber(BigInteger number) {
+    private void setNumber(long number) {
         this.number = number;
         numberString = String.valueOf(number);
     }
@@ -19,21 +18,21 @@ public class NumberAnalyzer {
         System.out.println("Welcome to Amazing Numbers!");
         System.out.println();
         showOptions();
-        BigInteger request;
+        long request;
         String requestString;
         do {
             System.out.print("\nEnter a request: ");
             requestString = scanner.nextLine();
-            request = new BigInteger(requestString);
-            if (request.compareTo(BigInteger.ZERO) > 0) {
+            request = Long.parseLong(requestString);
+            if (request > 0) {
                 numberAnalyzer.setNumber(request);
-                numberAnalyzer.properties();
-            } else if (request.compareTo(BigInteger.ZERO) < 0) {
+                numberAnalyzer.showProperties();
+            } else if (request < 0) {
                 System.out.println("\nThe first parameter should be a natural number or zero.");
             } else {
                 System.out.println("Goodbye!");
             }
-        } while (!request.equals(BigInteger.ZERO));
+        } while (request != 0);
     }
 
     private static void showOptions() {
@@ -43,11 +42,11 @@ public class NumberAnalyzer {
         System.out.println();
     }
 
-    private void properties() {
+    private void showProperties() {
         boolean even = isEven();
         boolean odd = !even;
-        boolean buzz = isBuzzNumber();
-        boolean duck = isDuckNumber();
+        boolean buzz = isBuzz();
+        boolean duck = isDuck();
         boolean palindromic = isPalindrome();
         System.out.printf("Properties of %d\n", number);
         System.out.printf("\teven: %b\n", even);
@@ -58,47 +57,19 @@ public class NumberAnalyzer {
     }
 
     private boolean isEven() {
-        return number.mod(BigInteger.TWO).equals(BigInteger.ZERO);
+        return number % 2 == 0;
     }
 
-    private boolean isBuzzNumber() {
-        return number.mod(BigInteger.valueOf(7)).equals(BigInteger.ZERO) || number.mod(BigInteger.TEN).equals(BigInteger.valueOf(7));
+    private boolean isBuzz() {
+        return number % 7 == 0 || number % 10 == 7;
     }
 
-    private boolean isDuckNumber() {
-        BigInteger numberCopy = number;
-        do {
-            if (numberCopy.mod(BigInteger.TEN).equals(BigInteger.ZERO)) {
-                return true;
-            } else {
-                numberCopy = numberCopy.divide(BigInteger.TEN);
-            }
-        } while (!numberCopy.equals(BigInteger.ZERO));
-        return false;
-    }
-
-    private ArrayList<BigInteger> integerToList() {
-        ArrayList<BigInteger> digitList = new ArrayList<>();
-        BigInteger numberCopy = number;
-        do {
-            BigInteger digit = new BigInteger(String.valueOf(numberCopy.mod(BigInteger.valueOf(10))));
-            digitList.add(digit); // Add the digit to the beginning of the list
-            numberCopy = numberCopy.divide(BigInteger.valueOf(10));
-        } while (numberCopy.compareTo(BigInteger.ZERO) != 0);
-        return digitList;
+    private boolean isDuck() {
+        return numberString.contains("0");
     }
 
     private boolean isPalindrome() {
-        ArrayList<BigInteger> digitList = integerToList();
-        int lastIndex = digitList.size() - 1;
-        for (int i = lastIndex; i >= 0; i--) {
-            BigInteger lastDigit = digitList.get(i);
-            BigInteger oppositeDigit = digitList.get(lastIndex - i);
-            if (!lastDigit.equals(oppositeDigit)) {
-                return false;
-            }
-        }
-        return true;
+        return numberString.contentEquals(new StringBuilder(numberString).reverse());
     }
 
     /*private void explanation() {
