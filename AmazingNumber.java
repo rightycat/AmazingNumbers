@@ -17,6 +17,8 @@ public class AmazingNumber {
     private boolean palindromic;
     private boolean gapful;
     private boolean spy;
+    private boolean square;
+    private boolean sunny;
 
     void setNumber(long number) {
         this.number = number;
@@ -32,6 +34,8 @@ public class AmazingNumber {
         palindromic = isPalindrome();
         gapful = isGapful();
         spy = isSpy();
+        square = isSquare();
+        sunny = isSunny();
     }
 
     // Show all properties for one number
@@ -42,6 +46,8 @@ public class AmazingNumber {
         System.out.printf("\tpalindromic: %b\n", palindromic);
         System.out.printf("\tgapful: %b\n", gapful);
         System.out.printf("\tspy: %b\n", spy);
+        System.out.printf("\tsquare: %b\n", square);
+        System.out.printf("\tsunny: %b\n", sunny);
         System.out.printf("\teven: %b\n", even);
         System.out.printf("\todd: %b\n", odd);
     }
@@ -93,6 +99,8 @@ public class AmazingNumber {
         if (palindromic) System.out.print(" palindromic,");
         if (gapful) System.out.print(" gapful,");
         if (spy) System.out.print(" spy,");
+        if (square) System.out.print(" square,");
+        if (sunny) System.out.print(" sunny,");
         if (even) System.out.print(" even");
         else System.out.print(" odd");
         System.out.print("\n");
@@ -146,6 +154,22 @@ public class AmazingNumber {
             digitsProduct *= number;
         }
         return digitsSum == digitsProduct;
+    }
+
+    private boolean isSquare() {
+        double sqrRoot = Math.sqrt(number);
+        long sqrRootInteger = (long) sqrRoot;
+        return sqrRoot == sqrRootInteger;
+    }
+
+    private boolean isSquare(long number) {
+        double sqrRoot = Math.sqrt(number);
+        long sqrRootInteger = (long) sqrRoot;
+        return sqrRoot == sqrRootInteger;
+    }
+
+    private boolean isSunny() {
+        return isSquare(number + 1);
     }
 
     private ArrayList<Long> createDigitsList() {

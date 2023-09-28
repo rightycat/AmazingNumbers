@@ -45,27 +45,32 @@ public class NumberAnalyzer {
     // Handles logic for processing requests
     private static void processRequest(AmazingNumber amazingNumber) {
         amazingNumber.setNumber(request);
-        if (requestArguments.length > 1) {
-            repetitions = Long.parseLong(requestArguments[1]);
-            if (repetitions > 0) {
-                if (requestArguments.length >= 3) {
-                    firstProperty = requestArguments[2];
-                    if (isPropertyPresent(firstProperty)) {
-                        if (requestArguments.length == 4) {
-                            secondProperty = requestArguments[3];
-                            if (validateBothProperties()) {
-                                amazingNumber.showSelectedNumbersProperties(repetitions, firstProperty, secondProperty);
-                            }
-                        } else amazingNumber.showSelectedNumbersProperties(repetitions, firstProperty);
 
-                    }
-                } else amazingNumber.showMultipleNumbersProperties(repetitions);
-            } else {
-                System.out.println("\nThe second parameter should be a natural number.");
-            }
-        } else {
+        if (requestArguments.length == 1) {
             amazingNumber.showNumberProperties();
+            return;
         }
+
+        repetitions = Long.parseLong(requestArguments[1]);
+        if (repetitions <= 0) {
+            System.out.println("\nThe second parameter should be a natural number.");
+        }
+
+        if (requestArguments.length >= 3) {
+            firstProperty = requestArguments[2];
+            if (!isPropertyPresent(firstProperty)) {
+                return;
+            }
+
+            if (requestArguments.length == 4) {
+                secondProperty = requestArguments[3];
+                if (validateBothProperties()) {
+                    amazingNumber.showSelectedNumbersProperties(repetitions, firstProperty, secondProperty);
+                }
+            } else {
+                amazingNumber.showSelectedNumbersProperties(repetitions, firstProperty);
+            }
+        } else amazingNumber.showMultipleNumbersProperties(repetitions);
     }
 
     private static boolean validateBothProperties() {
@@ -73,9 +78,9 @@ public class NumberAnalyzer {
             if (!arePropertyOpposites()) {
                 if (arePropertiesDifferent()) {
                     return true;
-                } else System.out.println("equals");
-            } else System.out.println("opposites");
-        } else System.out.println("not present");
+                }
+            }
+        }
         return false;
 
     }
@@ -124,6 +129,7 @@ public class NumberAnalyzer {
         System.out.println("  * the first parameter represents a starting number;");
         System.out.println("  * the second parameter shows how many consecutive numbers are to be processed;");
         System.out.println("- two natural numbers and a property to search for;");
+        System.out.println("- two natural numbers and two properties to search for;");
         System.out.println("- separate the parameters with one space;");
         System.out.println("- enter 0 to exit");
         System.out.println();
