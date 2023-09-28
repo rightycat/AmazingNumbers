@@ -60,15 +60,25 @@ public class AmazingNumber {
         }
     }
 
-    // Show all properties for multiple numbers that have a specified property
-    void showSelectedNumbersProperties(long repetitions, String firstProperty) {
+    void showSelectedNumbersProperties(long repetitions, String... properties) {
         long elementsShown = 0;
+
         while (elementsShown < repetitions) {
             try {
-                if (isPropertyTrue(firstProperty)) {
+                boolean allPropertiesTrue = true;
+
+                for (String property : properties) {
+                    if (!isPropertyTrue(property)) {
+                        allPropertiesTrue = false;
+                        break;  // Exit the loop if any property is not true
+                    }
+                }
+
+                if (allPropertiesTrue) {
                     compactProperties();
                     elementsShown++;
                 }
+
                 setNumber(++number);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -76,20 +86,6 @@ public class AmazingNumber {
         }
     }
 
-    void showSelectedNumbersProperties(long repetitions, String firstProperty, String secondProperty) {
-        long elementsShown = 0;
-        while (elementsShown < repetitions) {
-            try {
-                if (isPropertyTrue(firstProperty) && isPropertyTrue(secondProperty)) {
-                    compactProperties();
-                    elementsShown++;
-                }
-                setNumber(++number);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
     // Compact format to print properties
     private void compactProperties() {
@@ -113,7 +109,6 @@ public class AmazingNumber {
             Field field = getClass().getDeclaredField(propertyName.toLowerCase());
             return (boolean) field.get(this);
         } catch (NoSuchFieldException e) {
-            NumberAnalyzer.printPropertyError();
             return false;
         }
     }
