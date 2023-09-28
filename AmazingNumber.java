@@ -19,10 +19,13 @@ public class AmazingNumber {
     private boolean spy;
     private boolean square;
     private boolean sunny;
+    private boolean jumping;
+    private ArrayList<Integer> digits = new ArrayList<>();
 
     void setNumber(long number) {
         this.number = number;
         numberString = String.valueOf(number);
+        digits = createDigitsList();
         setProperties();
     }
 
@@ -36,6 +39,7 @@ public class AmazingNumber {
         spy = isSpy();
         square = isSquare();
         sunny = isSunny();
+        jumping = isJumping();
     }
 
     // Show all properties for one number
@@ -48,6 +52,7 @@ public class AmazingNumber {
         System.out.printf("\tspy: %b\n", spy);
         System.out.printf("\tsquare: %b\n", square);
         System.out.printf("\tsunny: %b\n", sunny);
+        System.out.printf("\tjumping: %b\n", jumping);
         System.out.printf("\teven: %b\n", even);
         System.out.printf("\todd: %b\n", odd);
     }
@@ -97,6 +102,7 @@ public class AmazingNumber {
         if (spy) System.out.print(" spy,");
         if (square) System.out.print(" square,");
         if (sunny) System.out.print(" sunny,");
+        if (jumping) System.out.print(" jumping,");
         if (even) System.out.print(" even");
         else System.out.print(" odd");
         System.out.print("\n");
@@ -141,10 +147,9 @@ public class AmazingNumber {
     }
 
     private boolean isSpy() {
-        ArrayList<Long> digitsList = createDigitsList();
-        long digitsSum = 0;
-        long digitsProduct = 1;
-        for (long number : digitsList) {
+        int digitsSum = 0;
+        int digitsProduct = 1;
+        for (int number : digits) {
             digitsSum += number;
             digitsProduct *= number;
         }
@@ -167,11 +172,38 @@ public class AmazingNumber {
         return isSquare(number + 1);
     }
 
-    private ArrayList<Long> createDigitsList() {
+    private boolean isJumping() {
+        boolean jumping = true;
+        int size = digits.size();
+        for (int i = 0; i < size; i++) {
+            if (size > 1) {
+                if (i == 0) {
+                    if (!differenceIsOne(digits.get(i), digits.get(i + 1))) {
+                        jumping = false;
+                    }
+                } else if (i == size - 1) {
+                    if (!differenceIsOne(digits.get(i), digits.get(i - 1))) {
+                        jumping = false;
+                    }
+                } else {
+                    if (!(differenceIsOne(digits.get(i), digits.get(i + 1)) && differenceIsOne(digits.get(i), digits.get(i - 1)))) {
+                        jumping = false;
+                    }
+                }
+            }
+        }
+        return jumping;
+    }
+
+    private boolean differenceIsOne(int currentDigit, int neighborDigit) {
+        return neighborDigit == currentDigit + 1 || neighborDigit == currentDigit - 1;
+    }
+
+    private ArrayList<Integer> createDigitsList() {
         String[] digitString = numberString.split("");
-        ArrayList<Long> digitsList = new ArrayList<>();
+        ArrayList<Integer> digitsList = new ArrayList<>();
         for (String digit : digitString) {
-            digitsList.add(Long.parseLong(digit));
+            digitsList.add(Integer.parseInt(digit));
         }
         return digitsList;
     }

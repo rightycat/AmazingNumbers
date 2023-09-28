@@ -71,9 +71,8 @@ public class NumberAnalyzer {
         } else {
             properties = Arrays.copyOfRange(requestArguments, 2, requestArguments.length);
             if (validateAllProperties()) {
-                System.out.println("we got it!");
                 amazingNumber.showSelectedNumbersProperties(repetitions, properties);
-            } else System.out.println("we did get here at least");
+            }
         }
 
         // TODO: ABOVE HERE /\/\/\/\
@@ -82,12 +81,8 @@ public class NumberAnalyzer {
     private static boolean validateAllProperties() {
         boolean allPresent = areAllPresent();
         if (allPresent) {
-            System.out.println("well, they are present indeed ?");
-            if (allNotExclusive()) {
-
-                return allNotExclusive();
-            } else System.out.println("yep found it");
-        } else printPropertyError2();
+            return allNotExclusive();
+        } else printPropertyError();
         return false;
     }
 
@@ -109,7 +104,6 @@ public class NumberAnalyzer {
         try {
             AvailableProperties myEnum = AvailableProperties.valueOf(propertyName);
         } catch (IllegalArgumentException e) {
-            //System.out.println("not present");
             return false;
         }
         return true;
@@ -149,7 +143,7 @@ public class NumberAnalyzer {
         } else return !firstProperty.equalsIgnoreCase(property);
     }
 
-    public static void printPropertyError2() {
+    public static void printPropertyError() {
         // Store the properties to display inside square brackets and divided by commas, e.g. [PROP] or [PROP, PROP (...)]
         StringBuilder errorProperties = new StringBuilder("[");
         int errorCount = wrongProperties.size();
@@ -166,6 +160,6 @@ public class NumberAnalyzer {
     }
 
     static void printAvailableProperties() {
-        System.out.println("Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]");
+        System.out.println("Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING]");
     }
 }
