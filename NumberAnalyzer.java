@@ -7,6 +7,11 @@ public class NumberAnalyzer {
     // Store the main request number
     private static long request;
 
+    private static long repetitions;
+    private static String firstProperty;
+    private static String secondProperty;
+
+
     // Store all request arguments for processing
     private static String[] requestArguments;
     private static final Scanner scanner = new Scanner(System.in);
@@ -16,7 +21,7 @@ public class NumberAnalyzer {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to Amazing Numbers!");
         System.out.println();
-        AmazingNumber.showOptions();
+        showOptions();
         do {
             System.out.print("\nEnter a request: ");
 
@@ -41,23 +46,95 @@ public class NumberAnalyzer {
     private static void processRequest(AmazingNumber amazingNumber) {
         amazingNumber.setNumber(request);
         if (requestArguments.length > 1) {
-            long secondArgument = Long.parseLong(requestArguments[1]);
-            if (secondArgument > 0) {
-                if (requestArguments.length == 3) {
-                    try {
-                        AvailableProperties argument = AvailableProperties.valueOf(requestArguments[2].toUpperCase());
-                        amazingNumber.showSelectedNumbersProperties(secondArgument, String.valueOf(argument));
-                    } catch (IllegalArgumentException e) {
-                        System.out.printf("The property [%s] is wrong.\n", requestArguments[2].toUpperCase());
-                        AmazingNumber.showAvailableProperties();
+            repetitions = Long.parseLong(requestArguments[1]);
+            if (repetitions > 0) {
+                if (requestArguments.length >= 3) {
+                    firstProperty = requestArguments[2];
+                    if (isPropertyPresent(firstProperty)) {
+                        if (requestArguments.length == 4) {
+                            secondProperty = requestArguments[3];
+                            if (validateBothProperties()) {
+                                amazingNumber.showSelectedNumbersProperties(repetitions, firstProperty, secondProperty);
+                            }
+                        } else amazingNumber.showSelectedNumbersProperties(repetitions, firstProperty);
+
                     }
-                } else amazingNumber.showMultipleNumbersProperties(secondArgument);
+                } else amazingNumber.showMultipleNumbersProperties(repetitions);
             } else {
                 System.out.println("\nThe second parameter should be a natural number.");
             }
         } else {
             amazingNumber.showNumberProperties();
         }
+    }
+
+    private static boolean validateBothProperties() {
+        if (isPropertyPresent(secondProperty)) {
+            if (!arePropertyOpposites()) {
+                if (arePropertiesDifferent()) {
+                    return true;
+                } else System.out.println("equals");
+            } else System.out.println("opposites");
+        } else System.out.println("not present");
+        return false;
+
+    }
+
+    private static boolean arePropertiesDifferent() {
+        if (firstProperty.equalsIgnoreCase(secondProperty)) {
+            printPropertyError();
+            return false;
+        } else return true;
+    }
+
+    public static void printPropertyError() {
+        if (requestArguments.length == 4) {
+            System.out.printf("The property [%s, %s] is wrong.\n", firstProperty.toUpperCase(), requestArguments[3].toUpperCase());
+        } else System.out.printf("The property [%s] is wrong.\n", firstProperty.toUpperCase());
+        printAvailableProperties();
+    }
+
+    private static boolean isPropertyPresent(String propertyName) {
+        try {
+            AvailableProperties myEnum = AvailableProperties.valueOf(propertyName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            printPropertyError();
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean arePropertyOpposites() {
+        if (firstProperty.equalsIgnoreCase("even") || secondProperty.equalsIgnoreCase("even")) {
+            return firstProperty.equalsIgnoreCase("odd") || secondProperty.equalsIgnoreCase("odd");
+        } else if (firstProperty.equalsIgnoreCase("duck") || secondProperty.equalsIgnoreCase("duck")) {
+            return firstProperty.equalsIgnoreCase("spy") || secondProperty.equalsIgnoreCase("spy");
+        } else if (firstProperty.equalsIgnoreCase("sunny") || secondProperty.equalsIgnoreCase("sunny")) {
+            return firstProperty.equalsIgnoreCase("square") || secondProperty.equalsIgnoreCase("square");
+        } else {
+            printPropertyError();
+            return true;
+        }
+    }
+
+    static void showOptions() {
+        System.out.println("Supported requests: ");
+        System.out.println("- enter a natural number to know its properties;");
+        System.out.println("- enter two natural numbers to obtain the properties of the list:");
+        System.out.println("  * the first parameter represents a starting number;");
+        System.out.println("  * the second parameter shows how many consecutive numbers are to be processed;");
+        System.out.println("- two natural numbers and a property to search for;");
+        System.out.println("- separate the parameters with one space;");
+        System.out.println("- enter 0 to exit");
+        System.out.println();
+    }
+
+    static void printAvailableProperties() {
+        StringBuilder allEnums = new StringBuilder("Available properties: [");
+        for (AvailableProperties property : AvailableProperties.values()) {
+            allEnums.append(property.name()).append(", ");
+        }
+        System.out.println(allEnums.append("]"));
     }
 
     private static void scClose() {

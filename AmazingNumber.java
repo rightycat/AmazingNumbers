@@ -34,26 +34,6 @@ public class AmazingNumber {
         spy = isSpy();
     }
 
-    static void showOptions() {
-        System.out.println("Supported requests: ");
-        System.out.println("- enter a natural number to know its properties;");
-        System.out.println("- enter two natural numbers to obtain the properties of the list:");
-        System.out.println("  * the first parameter represents a starting number;");
-        System.out.println("  * the second parameter shows how many consecutive numbers are to be processed;");
-        System.out.println("- two natural numbers and a property to search for;");
-        System.out.println("- separate the parameters with one space;");
-        System.out.println("- enter 0 to exit");
-        System.out.println();
-    }
-
-    static void showAvailableProperties() {
-        StringBuilder allEnums = new StringBuilder("Available properties: [");
-        for (AvailableProperties property : AvailableProperties.values()) {
-            allEnums.append(property.name()).append(", ");
-        }
-        System.out.println(allEnums.append("]"));
-    }
-
     // Show all properties for one number
     void showNumberProperties() {
         System.out.printf("Properties of %d\n", number);
@@ -67,19 +47,34 @@ public class AmazingNumber {
     }
 
     // Show all properties for multiple numbers
-    void showMultipleNumbersProperties(long numOfNumbers) {
-        for (int i = 0; i < numOfNumbers; i++) {
+    void showMultipleNumbersProperties(long repetitions) {
+        for (int i = 0; i < repetitions; i++) {
             compactProperties();
-            setNumber(number + 1);
+            setNumber(++number);
         }
     }
 
     // Show all properties for multiple numbers that have a specified property
-    void showSelectedNumbersProperties(long secondArgument, String requestArgument) {
+    void showSelectedNumbersProperties(long repetitions, String firstProperty) {
         long elementsShown = 0;
-        while (elementsShown < secondArgument) {
+        while (elementsShown < repetitions) {
             try {
-                if (isPropertyTrue(requestArgument)) {
+                if (isPropertyTrue(firstProperty)) {
+                    compactProperties();
+                    elementsShown++;
+                }
+                setNumber(++number);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    void showSelectedNumbersProperties(long repetitions, String firstProperty, String secondProperty) {
+        long elementsShown = 0;
+        while (elementsShown < repetitions) {
+            try {
+                if (isPropertyTrue(firstProperty) && isPropertyTrue(secondProperty)) {
                     compactProperties();
                     elementsShown++;
                 }
@@ -106,8 +101,13 @@ public class AmazingNumber {
     // Determine if a specific field from this object is true or false
     private boolean isPropertyTrue(String propertyName) throws NoSuchFieldException, IllegalAccessException {
         // Reflective field used to access object properties
-        Field field = getClass().getDeclaredField(propertyName.toLowerCase());
-        return (boolean) field.get(this);
+        try {
+            Field field = getClass().getDeclaredField(propertyName.toLowerCase());
+            return (boolean) field.get(this);
+        } catch (NoSuchFieldException e) {
+            NumberAnalyzer.printPropertyError();
+            return false;
+        }
     }
 
     // Series of functions that analyze a particular property
