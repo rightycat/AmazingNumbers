@@ -22,6 +22,10 @@ public class AmazingNumber {
     private boolean jumping;
     private ArrayList<Integer> digits = new ArrayList<>();
 
+    public AmazingNumber(long number) {
+        setNumber(number);
+    }
+
     void setNumber(long number) {
         this.number = number;
         numberString = String.valueOf(number);
@@ -177,16 +181,23 @@ public class AmazingNumber {
         int size = digits.size();
         for (int i = 0; i < size; i++) {
             if (size > 1) {
+                int currentDigit = digits.get(i);
+                int nextDigit;
+                int previousDigit;
                 if (i == 0) {
-                    if (!differenceIsOne(digits.get(i), digits.get(i + 1))) {
+                    nextDigit = digits.get(i + 1);
+                    if (!differenceIsOne(currentDigit, nextDigit)) {
                         jumping = false;
                     }
                 } else if (i == size - 1) {
-                    if (!differenceIsOne(digits.get(i), digits.get(i - 1))) {
+                    previousDigit = digits.get(i - 1);
+                    if (!differenceIsOne(currentDigit, previousDigit)) {
                         jumping = false;
                     }
                 } else {
-                    if (!(differenceIsOne(digits.get(i), digits.get(i + 1)) && differenceIsOne(digits.get(i), digits.get(i - 1)))) {
+                    previousDigit = digits.get(i - 1);
+                    nextDigit = digits.get(i + 1);
+                    if (!(differenceIsOne(currentDigit, nextDigit) && differenceIsOne(currentDigit, previousDigit))) {
                         jumping = false;
                     }
                 }
