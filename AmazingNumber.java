@@ -21,6 +21,7 @@ public class AmazingNumber {
     private boolean sunny;
     private boolean jumping;
     private ArrayList<Integer> digits = new ArrayList<>();
+    private final ArrayList<AmazingNumber> numbersList = new ArrayList<>();
 
     public AmazingNumber(long number) {
         setNumber(number);
@@ -46,33 +47,71 @@ public class AmazingNumber {
         jumping = isJumping();
     }
 
+    public long getNumber() {
+        return number;
+    }
+
+    public boolean getEven() {
+        return even;
+    }
+
+    public boolean getOdd() {
+        return odd;
+    }
+
+    public boolean getBuzz() {
+        return buzz;
+    }
+
+    public boolean getDuck() {
+        return duck;
+    }
+
+    public boolean getSpy() {
+        return spy;
+    }
+
+    public boolean getPalindromic() {
+        return palindromic;
+    }
+
+    public boolean getGapful() {
+        return gapful;
+    }
+
+    public boolean getSunny() {
+        return sunny;
+    }
+
+    public boolean getSquare() {
+        return square;
+    }
+
+    public boolean getJumping() {
+        return jumping;
+    }
+
+
+
     // Show all properties for one number
-    void showNumberProperties() {
-        System.out.printf("Properties of %d\n", number);
-        System.out.printf("\tbuzz: %b\n", buzz);
-        System.out.printf("\tduck: %b\n", duck);
-        System.out.printf("\tpalindromic: %b\n", palindromic);
-        System.out.printf("\tgapful: %b\n", gapful);
-        System.out.printf("\tspy: %b\n", spy);
-        System.out.printf("\tsquare: %b\n", square);
-        System.out.printf("\tsunny: %b\n", sunny);
-        System.out.printf("\tjumping: %b\n", jumping);
-        System.out.printf("\teven: %b\n", even);
-        System.out.printf("\todd: %b\n", odd);
+    ArrayList<AmazingNumber> singleNumberProperties() {
+        numbersList.add(this);
+        return numbersList;
     }
 
     // Show all properties for multiple numbers
-    void showMultipleNumbersProperties(long repetitions) {
+    ArrayList<AmazingNumber> multipleNumbersProperties(long repetitions) {
         for (int i = 0; i < repetitions; i++) {
-            compactProperties();
+            numbersList.add(this);
             setNumber(++number);
         }
+        return numbersList;
     }
 
-    void showSelectedNumbersProperties(long repetitions, String... properties) {
-        long elementsShown = 0;
+    ArrayList<AmazingNumber> selectedNumbersProperties(long repetitions, String... properties) {
+        long elementsAdded = 0;
 
-        while (elementsShown < repetitions) {
+        while (elementsAdded < repetitions) {
             try {
                 boolean allPropertiesTrue = true;
 
@@ -84,8 +123,8 @@ public class AmazingNumber {
                 }
 
                 if (allPropertiesTrue) {
-                    compactProperties();
-                    elementsShown++;
+                    numbersList.add(this);
+                    elementsAdded++;
                 }
 
                 setNumber(++number);
@@ -93,23 +132,7 @@ public class AmazingNumber {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-
-    // Compact format to print properties
-    private void compactProperties() {
-        System.out.printf("\t%d is ", number);
-        if (buzz) System.out.print(" buzz,");
-        if (duck) System.out.print(" duck,");
-        if (palindromic) System.out.print(" palindromic,");
-        if (gapful) System.out.print(" gapful,");
-        if (spy) System.out.print(" spy,");
-        if (square) System.out.print(" square,");
-        if (sunny) System.out.print(" sunny,");
-        if (jumping) System.out.print(" jumping,");
-        if (even) System.out.print(" even");
-        else System.out.print(" odd");
-        System.out.print("\n");
+        return numbersList;
     }
 
     // Determine if a specific field from this object is true or false

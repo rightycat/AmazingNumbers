@@ -12,7 +12,7 @@ public class RequestValidator {
         boolean allPresent = areAllPresent();
         if (allPresent) {
             return allNotExclusive();
-        } else printPropertyError();
+        } else AppUI.printPropertyError(requestHandler.getWrongProperties());
         return false;
     }
 
@@ -73,26 +73,5 @@ public class RequestValidator {
         } else if (firstProperty.equalsIgnoreCase(comparisonProperty)) {
             return !secondProperty.equalsIgnoreCase(property);
         } else return !firstProperty.equalsIgnoreCase(property);
-    }
-
-    public void printPropertyError() {
-        // Store the properties to display inside square brackets and divided by commas, e.g. [PROP] or [PROP, PROP (...)]
-        ArrayList<String> wrongProperties = requestHandler.getWrongProperties();
-        StringBuilder errorProperties = new StringBuilder("[");
-        int errorCount = wrongProperties.size();
-        for (int i = 0; i < errorCount; i++) {
-            if (i == errorCount - 1) {
-                errorProperties.append(wrongProperties.get(i)).append("]"); // Close brackets without commas for the last property
-            } else errorProperties.append(wrongProperties.get(i)).append(", ");
-        }
-
-        if (errorCount == 1) {
-            System.out.printf("The property %s is wrong.\n", errorProperties);
-        } else System.out.printf("The properties %s are wrong.\n", errorProperties);
-        printAvailableProperties();
-    }
-
-    void printAvailableProperties() {
-        System.out.println("Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING]");
     }
 }

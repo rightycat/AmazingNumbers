@@ -13,6 +13,8 @@ public class RequestHandler {
 
     // Store all request arguments for processing
     private static String[] requestArguments;
+    private ArrayList<AmazingNumber> requestResults = new ArrayList<>();
+    private static boolean endFlag = false;
     private static final Scanner scanner = new Scanner(System.in);
 
     public String[] getProperties() {
@@ -22,6 +24,9 @@ public class RequestHandler {
     public ArrayList<String> getWrongProperties() {
         return wrongProperties;
     }
+    public boolean getEndFlag() {
+        return endFlag;
+    }
 
     public void setWrongProperties(ArrayList<String> wrongProperties) {
         if (this.wrongProperties != null) {
@@ -30,25 +35,11 @@ public class RequestHandler {
         this.wrongProperties = wrongProperties;
     }
 
-
-    void startupMessage() {
-        System.out.print("Welcome to Amazing Numbers!\n\n");
-        System.out.println("Supported requests: ");
-        System.out.println("- enter a natural number to know its properties;");
-        System.out.println("- enter two natural numbers to obtain the properties of the list:");
-        System.out.println("  * the first parameter represents a starting number;");
-        System.out.println("  * the second parameter shows how many consecutive numbers are to be processed;");
-        System.out.println("- two natural numbers and a property to search for;");
-        System.out.println("- two natural numbers and two properties to search for;");
-        System.out.println("- separate the parameters with one space;");
-        System.out.print("- enter 0 to exit\n");
-    }
-
     // Handles logic for storing requests
-    public void requestHandler() {
-        startupMessage();
+    public ArrayList<AmazingNumber> fetchRequest() {
+        ArrayList<AmazingNumber> requestedNumbers = new ArrayList<>();
         do {
-            System.out.print("\nEnter a request: ");
+            AppUI.askRequest();
 
             // Input may be one number, two numbers or two numbers and a word(property)
             String input = scanner.nextLine();
@@ -56,15 +47,20 @@ public class RequestHandler {
             request = Long.parseLong(requestArguments[0]);
 
             if (request < 0) {
-                System.out.println("\nThe first parameter should be a natural number or zero.");
+                AppUI.firstParamError();
+            } else if (requestArguments.length > 1 && Integer.parseInt(requestArguments[1]) <= 0) {
+                AppUI.secondParamError();
             } else if (request == 0) {
+                endFlag = true;
                 System.out.println("Goodbye!");
-                break; // Exit the loop when request is zero
+                return null; // Exit the loop when request is zero
             } else {
                 processRequest();
+                return requestResults;
             }
-        } while (true);
+        } while (!endFlag);
         scanner.close();
+        return requestedNumbers;
     }
 
     // Handles logic for processing requests
@@ -73,22 +69,16 @@ public class RequestHandler {
         RequestValidator requestValidator = new RequestValidator(this);
 
         if (requestArguments.length == 1) {
-            amazingNumber.showNumberProperties();
-            return;
-        }
-
-        long repetitions = Long.parseLong(requestArguments[1]);
-        if (repetitions <= 0) {
-            System.out.println("\nThe second parameter should be a natural number.");
-            return; // Exit early to prevent further processing
-        }
-
-        if (requestArguments.length == 2) {
-            amazingNumber.showMultipleNumbersProperties(repetitions);
+            requestResults = amazingNumber.singleNumberProperties();
         } else {
-            properties = Arrays.copyOfRange(requestArguments, 2, requestArguments.length);
-            if (requestValidator.validateAllProperties()) {
-                amazingNumber.showSelectedNumbersProperties(repetitions, properties);
+            int repetitions = Integer.parseInt(requestArguments[1]);
+            if (requestArguments.length == 2) {
+                requestResults = amazingNumber.multipleNumbersProperties(repetitions);
+            } else {
+                properties = Arrays.copyOfRange(requestArguments, 2, requestArguments.length);
+                if (requestValidator.validateAllProperties()) {
+                    requestResults = amazingNumber.selectedNumbersProperties(repetitions, properties);
+                }
             }
         }
     }
