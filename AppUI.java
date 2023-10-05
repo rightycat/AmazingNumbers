@@ -13,6 +13,8 @@ public class AppUI {
         System.out.printf("\tsquare: %b\n", number.getSquare());
         System.out.printf("\tsunny: %b\n", number.getSunny());
         System.out.printf("\tjumping: %b\n", number.getJumping());
+        System.out.printf("\thappy: %b\n", number.getHappy());
+        System.out.printf("\tsad: %b\n", number.getSad());
         System.out.printf("\teven: %b\n", number.getEven());
         System.out.printf("\todd: %b\n", number.getOdd());
     }
@@ -27,6 +29,8 @@ public class AppUI {
         if (amazingNumber.getSquare()) System.out.print(" square,");
         if (amazingNumber.getSunny()) System.out.print(" sunny,");
         if (amazingNumber.getJumping()) System.out.print(" jumping,");
+        if (amazingNumber.getHappy()) System.out.print(" happy,");
+        if (amazingNumber.getSad()) System.out.print(" sad,");
         if (amazingNumber.getEven()) System.out.print(" even");
         else System.out.print(" odd");
         System.out.print("\n");
@@ -39,8 +43,8 @@ public class AppUI {
         System.out.println("- enter two natural numbers to obtain the properties of the list:");
         System.out.println("  * the first parameter represents a starting number;");
         System.out.println("  * the second parameter shows how many consecutive numbers are to be processed;");
-        System.out.println("- two natural numbers and a property to search for;");
-        System.out.println("- two natural numbers and two properties to search for;");
+        System.out.println("- two natural numbers and properties to search for;");
+        System.out.println("- a property preceded by minus must not be present in numbers;");
         System.out.println("- separate the parameters with one space;");
         System.out.print("- enter 0 to exit\n");
     }
@@ -58,7 +62,7 @@ public class AppUI {
     }
 
     static void printAvailableProperties() {
-        System.out.println("Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING]");
+        System.out.println("Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD]");
     }
 
     static void printPropertyError(ArrayList<String> wrongProperties) {
@@ -70,6 +74,11 @@ public class AppUI {
             System.out.printf("The property %s is wrong.\n", errorProperties);
         } else System.out.printf("The properties %s are wrong.\n", errorProperties);
         printAvailableProperties();
+    }
+
+    static void mutuallyExclusiveError(String firstProperty, String secondProperty) {
+        System.out.printf("The request contains mutually exclusive properties: [%s,%s]\n", firstProperty.toUpperCase(), secondProperty.toUpperCase());
+        System.out.println("There are no numbers with these properties.");
     }
 
     private static StringBuilder buildErrorList(ArrayList<String> wrongProperties) {

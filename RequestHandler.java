@@ -1,43 +1,30 @@
 package numbers;
 
+import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class RequestHandler {
 
     // Store the main request number
-    private static long request;
-    private static String[] properties;
+    private long request;
+    private int repetitions;
+    private final ArrayList<String> allProperties = new ArrayList<>();
+    private final ArrayList<String> targetedProperties = new ArrayList<>();
+    private final ArrayList<String> excludedProperties = new ArrayList<>();
     private ArrayList<String> wrongProperties;
 
     // Store all request arguments for processing
-    private static String[] requestArguments;
-    private ArrayList<AmazingNumber> requestResults = new ArrayList<>();
-    private static boolean endFlag = false;
-    private static final Scanner scanner = new Scanner(System.in);
-
-    public String[] getProperties() {
-        return properties;
-    }
-
-    public ArrayList<String> getWrongProperties() {
-        return wrongProperties;
-    }
-    public boolean getEndFlag() {
-        return endFlag;
-    }
-
-    public void setWrongProperties(ArrayList<String> wrongProperties) {
-        if (this.wrongProperties != null) {
-            this.wrongProperties.clear();
-        }
-        this.wrongProperties = wrongProperties;
-    }
+    private String[] requestArguments;
+    private List<AmazingNumber> requestResults = new ArrayList<>();
+    private boolean endFlag = false;
+    private final Scanner scanner = new Scanner(System.in);
 
     // Handles logic for storing requests
-    public ArrayList<AmazingNumber> fetchRequest() {
-        ArrayList<AmazingNumber> requestedNumbers = new ArrayList<>();
+    public List<AmazingNumber> fetchRequest() {
+        if (!requestResults.isEmpty()) {
+            requestResults.clear();
+        }
         do {
             AppUI.askRequest();
 
@@ -53,33 +40,82 @@ public class RequestHandler {
             } else if (request == 0) {
                 endFlag = true;
                 System.out.println("Goodbye!");
-                return null; // Exit the loop when request is zero
+                requestResults = null;
             } else {
-                processRequest();
+                try {
+                    processRequest();
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
                 return requestResults;
             }
         } while (!endFlag);
         scanner.close();
-        return requestedNumbers;
+        return requestResults;
     }
 
     // Handles logic for processing requests
-    private void processRequest() {
-        AmazingNumber amazingNumber = new AmazingNumber(request);
+    private void processRequest() throws NoSuchFieldException, IllegalAccessException {
         RequestValidator requestValidator = new RequestValidator(this);
 
         if (requestArguments.length == 1) {
-            requestResults = amazingNumber.singleNumberProperties();
+            requestResults = AmazingNumberGenerator.generateSingleNumber(request);
         } else {
-            int repetitions = Integer.parseInt(requestArguments[1]);
+            repetitions = Integer.parseInt(requestArguments[1]);
             if (requestArguments.length == 2) {
-                requestResults = amazingNumber.multipleNumbersProperties(repetitions);
+                requestResults = AmazingNumberGenerator.generateMultipleNumbers(request, repetitions);
             } else {
-                properties = Arrays.copyOfRange(requestArguments, 2, requestArguments.length);
+                setProperties();
                 if (requestValidator.validateAllProperties()) {
-                    requestResults = amazingNumber.selectedNumbersProperties(repetitions, properties);
+                    requestResults = AmazingNumberGenerator.generateSelectedNumbersDEV(request, repetitions, targetedProperties, excludedProperties);
                 }
             }
         }
     }
+
+    private void setProperties() {
+        if (!allProperties.isEmpty()) {
+            allProperties.clear();
+            excludedProperties.clear();
+            targetedProperties.clear();
+        }
+
+        for (int i = 2; i < requestArguments.length; i++) {
+            String property;
+            if ((requestArguments[i].charAt(0) == '-')) {
+                property = requestArguments[i].substring(1);
+                excludedProperties.add(property);
+            } else {
+                property = requestArguments[i];
+                targetedProperties.add(property);
+            }
+            allProperties.add(property);
+        }
+    }
+
+    public ArrayList<String> getAllProperties() {
+        return allProperties;
+    }
+    public ArrayList<String> getTargetedProperties() {
+        return targetedProperties;
+    }
+    public ArrayList<String> getExcludedProperties() {
+        return excludedProperties;
+    }
+
+    public ArrayList<String> getWrongProperties() {
+        return wrongProperties;
+    }
+
+    public void setWrongProperties(ArrayList<String> wrongProperties) {
+        if (this.wrongProperties != null) {
+            this.wrongProperties.clear();
+        }
+        this.wrongProperties = wrongProperties;
+    }
+
+    public int getRepetitions() {
+        return repetitions;
+    }
+
 }

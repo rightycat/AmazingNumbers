@@ -1,6 +1,7 @@
 package numbers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RequestValidator {
     RequestHandler requestHandler;
@@ -11,7 +12,7 @@ public class RequestValidator {
     public boolean validateAllProperties() {
         boolean allPresent = areAllPresent();
         if (allPresent) {
-            return allNotExclusive();
+            return targetsNotExclusive() && excludedNotExclusive();
         } else AppUI.printPropertyError(requestHandler.getWrongProperties());
         return false;
     }
@@ -19,7 +20,7 @@ public class RequestValidator {
     private boolean areAllPresent() {
         ArrayList<String> wrongProperties = new ArrayList<>();
         boolean allPresent = true;
-        for (String property : requestHandler.getProperties()) {
+        for (String property : requestHandler.getAllProperties()) {
             if (!isPropertyPresent(property.toUpperCase())) {
                 wrongProperties.add(property.toUpperCase());
                 if (allPresent) {
@@ -27,7 +28,10 @@ public class RequestValidator {
                 }
             }
         }
-        requestHandler.setWrongProperties(wrongProperties);
+
+        if (!wrongProperties.isEmpty()) {
+            requestHandler.setWrongProperties(wrongProperties);
+        }
         return allPresent;
     }
 
@@ -40,11 +44,48 @@ public class RequestValidator {
         return true;
     }
 
-    private boolean allNotExclusive() {
-        String[] properties = requestHandler.getProperties();
-        for (int i = 0; i < properties.length; i++) {
-            for (int k = i + 1; k < properties.length; k++) {
-                if (!notExclusive(properties[i], properties[k])) {
+    private boolean targetsNotExclusive() {
+        List<String> targetedProperties = requestHandler.getTargetedProperties();
+        List<String> excludedProperties = requestHandler.getExcludedProperties();
+        int targetedAmount = targetedProperties.size();
+        int excludedAmount = excludedProperties.size();
+        String firstProperty;
+        String comparisonProperty;
+
+        for (int i = 0; i < targetedAmount; i++) {
+            firstProperty = targetedProperties.get(i);
+            for (int k = i + 1; k < targetedAmount; k++) {
+                comparisonProperty = targetedProperties.get(k);
+                if (areExclusive(firstProperty, comparisonProperty)) {
+                    AppUI.mutuallyExclusiveError(firstProperty, comparisonProperty);
+                    return false;
+                }
+            }
+
+            for (int k = 0; k < excludedAmount; k++) {
+                comparisonProperty = excludedProperties.get(k);
+                if (firstProperty.equalsIgnoreCase(comparisonProperty)) {
+                    AppUI.mutuallyExclusiveError(firstProperty, '-' + comparisonProperty);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean excludedNotExclusive() {
+        List<String> excludedProperties = requestHandler.getExcludedProperties();
+        int excludedAmount = excludedProperties.size();
+        String firstProperty;
+        String comparisonProperty;
+
+        for (int i = 0; i < excludedAmount; i++) {
+            firstProperty = excludedProperties.get(i);
+            for (int k = i + 1; k < excludedAmount; k++) {
+                comparisonProperty = excludedProperties.get(k);
+                if (areExclusive(firstProperty, comparisonProperty)) {
+                    AppUI.mutuallyExclusiveError('-' + firstProperty, '-' + comparisonProperty);
                     return false;
                 }
             }
@@ -52,17 +93,15 @@ public class RequestValidator {
         return true;
     }
 
-    private boolean notExclusive(String firstProperty, String secondProperty) {
+    private boolean areExclusive(String firstProperty, String secondProperty) {
         if (noExclusivity("even", "odd", firstProperty, secondProperty)) {
             if (noExclusivity("duck", "spy", firstProperty, secondProperty)) {
                 if (noExclusivity("square", "sunny", firstProperty, secondProperty)) {
-                    return true;
+                    return !noExclusivity("happy", "sad", firstProperty, secondProperty);
                 }
             }
         }
-        System.out.printf("The request contains mutually exclusive properties: [%s,%s]\n", firstProperty.toUpperCase(), secondProperty.toUpperCase());
-        System.out.println("There are no numbers with these properties.");
-        return false;
+        return true;
     }
 
     private boolean noExclusivity(String property, String comparisonProperty, String firstProperty, String secondProperty) {

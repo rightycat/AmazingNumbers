@@ -20,18 +20,19 @@ public class AmazingNumber {
     private boolean square;
     private boolean sunny;
     private boolean jumping;
+    private boolean happy;
+    private boolean sad;
     private ArrayList<Integer> digits = new ArrayList<>();
-    private final ArrayList<AmazingNumber> numbersList = new ArrayList<>();
 
     public AmazingNumber(long number) {
         setNumber(number);
+        setProperties();
     }
 
     void setNumber(long number) {
         this.number = number;
         numberString = String.valueOf(number);
         digits = createDigitsList();
-        setProperties();
     }
 
     private void setProperties() {
@@ -45,104 +46,18 @@ public class AmazingNumber {
         square = isSquare();
         sunny = isSunny();
         jumping = isJumping();
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public boolean getEven() {
-        return even;
-    }
-
-    public boolean getOdd() {
-        return odd;
-    }
-
-    public boolean getBuzz() {
-        return buzz;
-    }
-
-    public boolean getDuck() {
-        return duck;
-    }
-
-    public boolean getSpy() {
-        return spy;
-    }
-
-    public boolean getPalindromic() {
-        return palindromic;
-    }
-
-    public boolean getGapful() {
-        return gapful;
-    }
-
-    public boolean getSunny() {
-        return sunny;
-    }
-
-    public boolean getSquare() {
-        return square;
-    }
-
-    public boolean getJumping() {
-        return jumping;
-    }
-
-
-
-    // Show all properties for one number
-    ArrayList<AmazingNumber> singleNumberProperties() {
-        numbersList.add(this);
-        return numbersList;
-    }
-
-    // Show all properties for multiple numbers
-    ArrayList<AmazingNumber> multipleNumbersProperties(long repetitions) {
-        for (int i = 0; i < repetitions; i++) {
-            numbersList.add(this);
-            setNumber(++number);
-        }
-        return numbersList;
-    }
-
-    ArrayList<AmazingNumber> selectedNumbersProperties(long repetitions, String... properties) {
-        long elementsAdded = 0;
-
-        while (elementsAdded < repetitions) {
-            try {
-                boolean allPropertiesTrue = true;
-
-                for (String property : properties) {
-                    if (!isPropertyTrue(property)) {
-                        allPropertiesTrue = false;
-                        break;  // Exit the loop if any property is not true
-                    }
-                }
-
-                if (allPropertiesTrue) {
-                    numbersList.add(this);
-                    elementsAdded++;
-                }
-
-                setNumber(++number);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return numbersList;
+        happy = isHappy();
+        sad = !happy;
     }
 
     // Determine if a specific field from this object is true or false
-    private boolean isPropertyTrue(String propertyName) throws NoSuchFieldException, IllegalAccessException {
+    boolean isPropertyFalse(String propertyName) throws IllegalAccessException {
         // Reflective field used to access object properties
         try {
             Field field = getClass().getDeclaredField(propertyName.toLowerCase());
-            return (boolean) field.get(this);
+            return !((boolean) field.get(this));
         } catch (NoSuchFieldException e) {
-            return false;
+            return true;
         }
     }
 
@@ -229,6 +144,37 @@ public class AmazingNumber {
         return jumping;
     }
 
+    private boolean isHappy() {
+        long originalNumber = this.number;
+        if (number == 1) {
+            return true;
+        }
+
+        ArrayList<Integer> sequence = new ArrayList<>();
+        boolean happyNumber = false;
+        boolean hasSequence = false;
+
+        while (!happyNumber && !hasSequence) {
+            int digitsSquareSum = 0;
+            for (int digit : digits) {
+                digitsSquareSum += (int) Math.pow(digit, 2);
+            }
+            if (!sequence.contains(digitsSquareSum)) {
+                if (digitsSquareSum == 1) {
+                    happyNumber = true;
+                } else {
+                    sequence.add(digitsSquareSum);
+                    setNumber(digitsSquareSum);
+                }
+            } else {
+                hasSequence = true;
+            }
+        }
+        setNumber(originalNumber);
+        return happyNumber;
+    }
+
+
     private boolean differenceIsOne(int currentDigit, int neighborDigit) {
         return neighborDigit == currentDigit + 1 || neighborDigit == currentDigit - 1;
     }
@@ -240,5 +186,57 @@ public class AmazingNumber {
             digitsList.add(Integer.parseInt(digit));
         }
         return digitsList;
+    }
+
+    public long getNumber() {
+        return number;
+    }
+
+    public boolean getEven() {
+        return even;
+    }
+
+    public boolean getOdd() {
+        return odd;
+    }
+
+    public boolean getBuzz() {
+        return buzz;
+    }
+
+    public boolean getDuck() {
+        return duck;
+    }
+
+    public boolean getSpy() {
+        return spy;
+    }
+
+    public boolean getPalindromic() {
+        return palindromic;
+    }
+
+    public boolean getGapful() {
+        return gapful;
+    }
+
+    public boolean getSunny() {
+        return sunny;
+    }
+
+    public boolean getSquare() {
+        return square;
+    }
+
+    public boolean getJumping() {
+        return jumping;
+    }
+
+    public boolean getHappy() {
+        return happy;
+    }
+
+    public boolean getSad() {
+        return sad;
     }
 }
